@@ -73,7 +73,24 @@ LOCAL_CFLAGS+= \
 
 ifeq ($(LOG_TO_ANDROID_LOGCAT),true)
 LOCAL_CFLAGS+= -DDBUS_ANDROID_LOG
-LOCAL_SHARED_LIBRARIES+= libcutils
+LOCAL_STATIC_LIBRARIES+= libcutils
 endif
 
+include $(BUILD_STATIC_LIBRARY)
+
+#
+# Build libdbus shared library from static library
+#
+include $(CLEAR_VARS)
+LOCAL_MODULE := libdbus
+LOCAL_WHOLE_STATIC_LIBRARIES := libdbus
+LOCAL_CFLAGS+= \
+	-DDBUS_COMPILATION \
+	-DANDROID_MANAGED_SOCKET \
+	-DDBUS_MACHINE_UUID_FILE=\"/etc/machine-id\"
+
+ifeq ($(LOG_TO_ANDROID_LOGCAT),true)
+LOCAL_CFLAGS+= -DDBUS_ANDROID_LOG
+LOCAL_SHARED_LIBRARIES+= libcutils
+endif
 include $(BUILD_SHARED_LIBRARY)

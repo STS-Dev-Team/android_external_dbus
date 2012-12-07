@@ -47,7 +47,7 @@
 #undef DBUS_HAVE_ATOMIC_INT
 
 
-        #if (defined(__i386__) || defined(__x86_64__))
+        #if (defined(__i386__) || defined(__x86_64__) || (HAVE_ANDROID_OS))
         # define DBUS_HAVE_ATOMIC_INT 1
         #endif
       

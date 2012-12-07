@@ -184,10 +184,10 @@ _dbus_pthread_mutex_unlock (DBusMutex *mutex)
   
   pmutex->count -= 1;
 
-  if (pmutex->count == 0)
+  if (pmutex->count == 0) {
+    pmutex->holder = NULL;
     PTHREAD_CHECK ("pthread_mutex_unlock", pthread_mutex_unlock (&pmutex->lock));
-  
-  /* We leave pmutex->holder set to ourselves, its content is undefined if count is 0 */
+  }
 }
 
 static DBusCondVar *

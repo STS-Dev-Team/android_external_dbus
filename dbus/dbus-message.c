@@ -217,6 +217,11 @@ dbus_message_set_serial (DBusMessage   *message,
  * itself not incremented.  Ownership of link and counter refcount is
  * passed to the message.
  *
+ * This function may be called with locks held. As a result, the counter's
+ * notify function is not called; the caller is expected to either call
+ * _dbus_counter_notify() on the counter when they are no longer holding
+ * locks, or take the same action that would be taken by the notify function.
+ *
  * @param message the message
  * @param link link with counter as data
  */
@@ -253,12 +258,19 @@ _dbus_message_add_counter_link (DBusMessage  *message,
 #ifdef HAVE_UNIX_FD_PASSING
   _dbus_counter_adjust_unix_fd (link->data, message->unix_fd_counter_delta);
 #endif
+
+  _dbus_counter_notify (link->data);
 }
 
 /**
  * Adds a counter to be incremented immediately with the size/unix fds
  * of this message, and decremented by the size/unix fds of this
  * message when this message if finalized.
+ *
+ * This function may be called with locks held. As a result, the counter's
+ * notify function is not called; the caller is expected to either call
+ * _dbus_counter_notify() on the counter when they are no longer holding
+ * locks, or take the same action that would be taken by the notify function.
  *
  * @param message the message
  * @param counter the counter
@@ -312,6 +324,7 @@ _dbus_message_remove_counter (DBusMessage  *message,
   _dbus_counter_adjust_unix_fd (counter, - message->unix_fd_counter_delta);
 #endif
 
+  _dbus_counter_notify (counter);
   _dbus_counter_unref (counter);
 }
 
@@ -573,6 +586,7 @@ free_counter (void *element,
   _dbus_counter_adjust_unix_fd (counter, - message->unix_fd_counter_delta);
 #endif
 
+  _dbus_counter_notify (counter);
   _dbus_counter_unref (counter);
 }
 

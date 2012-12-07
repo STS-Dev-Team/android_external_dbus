@@ -30,7 +30,7 @@ echo "Configuring and building docs"
 ## you won't fail to update those docs
 ./autogen.sh --enable-xml-docs=yes --enable-doxygen-docs=yes || die "could not autogen"
 doxygen Doxyfile || die "could not run Doxygen"
-make -C doc || die "could not build docs"
+$(MAKE) -C doc || die "could not build docs"
 
 MANFILES=`find -name "dbus*.1"`
 for M in $MANFILES ; do
